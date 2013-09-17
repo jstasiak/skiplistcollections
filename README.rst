@@ -5,7 +5,7 @@ skiplistcollections
    :alt: Build status
    :target: https://travis-ci.org/jstasiak/skiplistcollections
 
-*skipcollections* is a Python module containing skip list based collections. *skiplistcollections* is written in Python and works with:
+*skiplistcollections* is a Python module containing skip list based sorted collections. *skiplistcollections* is written in Python and works with:
 
 * CPython 2.6+, 3.2+
 * PyPy 1.9+
