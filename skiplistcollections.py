@@ -116,7 +116,7 @@ class SkipListDict(object):
 
             self._size += 1
 
-    def __del__(self, key):
+    def __delitem__(self, key):
         update = self._update[:]
         node = self._find_less(update, key)
         node = node[3]

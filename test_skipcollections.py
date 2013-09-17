@@ -37,3 +37,14 @@ def test_regular_stuff():
 
         ok_(number in stuff)
         eq_(stuff[number], number % 100)
+
+    used_keys.remove(0)
+
+    for key in set(used_keys):
+        used_keys.remove(key)
+
+        ok_(key in stuff)
+        del stuff[key]
+        ok_(key not in stuff)
+
+        eq_(len(stuff), len(used_keys))
