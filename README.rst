@@ -1,5 +1,5 @@
-skipcollections
-===============
+skiplistcollections
+===================
 
 .. image:: https://travis-ci.org/jstasiak/skiplistcollections.png?branch=master
    :alt: Build status
