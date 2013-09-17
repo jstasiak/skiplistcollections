@@ -16,8 +16,28 @@ Usage
 
 See http://pythonsweetness.tumblr.com/post/45227295342/fast-pypy-compatible-ordered-map-in-89-lines-of-python for details.
 
-You can also check ``test_skiplistcollections.py`` for the usage.
+.. code-block:: python
 
+   >>> from skiplistcollections import SkipListDict
+   >>> things = SkipListDict(maxsize=16)
+   >>> len(things)
+   0
+   >>> things['x'] = 1
+   >>> 'x' in things
+   True
+   >>> len(things)
+   1
+   >>> things['g'] = 2
+   >>> things['z'] = 3
+   >>> tuple(things.keys())
+   ('g', 'x', 'z')
+   >>> tuple(things.values())
+   (2, 1, 3)
+   >>> tuple(things.items())
+   (('g', 2), ('x', 1), ('z', 3))
+   >>> del things['z']
+   >>> len(things)
+   2
 
 Copyright
 ---------
