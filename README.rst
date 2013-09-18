@@ -10,6 +10,9 @@ skiplistcollections
 * CPython 2.6+, 3.2+
 * PyPy 1.9+
 
+Project page on GitHub: https://github.com/jstasiak/skiplistcollections
+
+Project page on PyPI: https://pypi.python.org/pypi/skiplistcollections
 
 Usage
 -----
@@ -49,7 +52,8 @@ As you can see, ``skipcollections.SkipListDict`` follows Python dict interface q
 Changes
 -------
 
-### 0.0.2
+0.0.2
+`````
 
 * Improved README
 
