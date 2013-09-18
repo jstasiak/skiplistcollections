@@ -4,7 +4,7 @@ import random
 from six import PY3
 from six.moves import xrange
 
-__version__ = '0.0.1'
+__version__ = '0.0.2'
 
 
 class SkipListDict(object):

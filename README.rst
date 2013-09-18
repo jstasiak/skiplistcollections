@@ -39,6 +39,20 @@ See http://pythonsweetness.tumblr.com/post/45227295342/fast-pypy-compatible-orde
    >>> len(things)
    2
 
+
+As you can see, ``skipcollections.SkipListDict`` follows Python dict interface quite closely. You should note that:
+
+* You need to set the maximum dict size when you create it
+* ``update`` method and initializing using another mapping are not supported yet
+* On Python 2 there are ``items/keys/values`` (returning tuples) and ``iteritems/iterkeys/itervalues`` (returning generators) methods, on Python 3 there are only ``items/keys/values`` and they return generators (it should be probably changed to return views for the sake of compatibility)
+
+Changes
+-------
+
+### 0.0.2
+
+* Improved README
+
 Copyright
 ---------
 
