@@ -8,7 +8,7 @@ except ImportError:
 
 from six.moves import xrange
 
-__version__ = '0.0.3'
+__version__ = '0.0.4'
 __all__ = ('SkipListDict',)
 
 
@@ -18,16 +18,14 @@ class MappingView(colabc.MappingView):
         self._start_key = start_key
         self._reverse = reverse
 
-    def __len__(self):
-        assert self._start_key is None
+        if start_key is None:
+            self.__len__ = self._len
+
+    def _len(self):
         return len(self._mapping)
 
     def __repr__(self):
-        if self._start_key is None and not self._reverse:
-            return '{0.__class__.__name__}({0._mapping!r})'.format(self)
-        else:
-            return '{0.__class__.__name__}(start_key={1!r}, reverse={2!r}'.format(
-                self, self._start_key, self._reverse)
+        return ('{0.__class__.__name__}({0._mapping!r}, start_key={0._start_key})'.format(self))
 
 
 class KeysView(MappingView, colabc.KeysView):
