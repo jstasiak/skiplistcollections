@@ -1,15 +1,77 @@
 import math
 import random
 
-from six import PY3
+try:
+    import collections.abc as colabc
+except ImportError:
+    import collections as colabc
+
 from six.moves import xrange
 
-__version__ = '0.0.2'
+__version__ = '0.0.3'
+__all__ = ('SkipListDict',)
 
 
-class SkipListDict(object):
-    def __init__(self, maxsize=65535, random=random.random):
-        self._max_level = int(math.log(maxsize, 2))
+class MappingView(colabc.MappingView):
+    def __init__(self, mapping, start_key=None, reverse=False):
+        self._mapping = mapping
+        self._start_key = start_key
+        self._reverse = reverse
+
+    def __len__(self):
+        assert self._start_key is None
+        return len(self._mapping)
+
+    def __repr__(self):
+        if self._start_key is None and not self._reverse:
+            return '{0.__class__.__name__}({0._mapping!r})'.format(self)
+        else:
+            return '{0.__class__.__name__}(start_key={1!r}, reverse={2!r}'.format(
+                self, self._start_key, self._reverse)
+
+
+class KeysView(MappingView, colabc.KeysView):
+    def __contains__(self, key):
+        assert self._start_key is None
+        return key in self._mapping
+
+    def __iter__(self):
+        for k, v in self._mapping._items(self._start_key, self._reverse):
+            yield k
+
+
+class ItemsView(MappingView, colabc.ItemsView):
+    def __contains__(self, item):
+        assert self._start_key is None
+        key, value = item
+        try:
+            v = self._mapping[key]
+        except KeyError:
+            return False
+        else:
+            return v == value
+
+    def __iter__(self):
+        return self._mapping._items(self._start_key, self._reverse)
+
+
+class ValuesView(MappingView, colabc.ValuesView):
+    def __contains__(self, value):
+        assert self._start_key is None
+        for v in self._mapping.values():
+            if v == value:
+                return True
+
+        return False
+
+    def __iter__(self):
+        for k, v in self._mapping._items(self._start_key, self._reverse):
+            yield v
+
+
+class SkipListDict(colabc.MutableMapping):
+    def __init__(self, capacity=65535, random=random.random):
+        self._max_level = int(math.log(capacity, 2))
         self._level = 0
         self._head = self._make_node(self._max_level, None, None)
         self._nil = self._make_node(-1, None, None)
@@ -33,7 +95,7 @@ class SkipListDict(object):
             lvl += 1
         return lvl
 
-    def _iteritems(self, start_key=None, reverse=False):
+    def _items(self, start_key=None, reverse=False):
         if reverse:
             node = self._tail
         else:
@@ -48,34 +110,20 @@ class SkipListDict(object):
             yield node[0], node[1]
             node = node[idx]
 
+    def items(self, start_key=None, reverse=False):
+        return ItemsView(self, start_key, reverse)
+
+    iteritems = items
+
     def keys(self, start_key=None, reverse=False):
-        for k, v in self._iteritems(start_key, reverse):
-            yield k
+        return KeysView(self, start_key, reverse)
+
+    iterkeys = keys
 
     def values(self, start_key=None, reverse=False):
-        for k, v in self._iteritems(start_key, reverse):
-            yield v
+        return ValuesView(self, start_key, reverse)
 
-    if not PY3:
-        iteritems = _iteritems
-        iteritems.__name__ = 'iteritems'
-
-        def items(self, start_key=None, reverse=False):
-            return tuple(self.iteritems(start_key, reverse))
-
-        iterkeys = keys
-        iterkeys.__name__ = 'iterkeys'
-
-        def keys(self, start_key=None, reverse=False):
-            return tuple(self.iterkeys(start_key, reverse))
-
-        itervalues = values
-        itervalues.__name__ = 'itervalues'
-
-        def values(self, start_key=None, reverse=False):
-            return tuple(self.itervalues(start_key, reverse))
-    else:
-        items = _iteritems
+    itervalues = values
 
     def _find_less(self, update, key):
         node = self._head
@@ -157,15 +205,9 @@ class SkipListDict(object):
         else:
             raise KeyError
 
-    def get(self, key, default=None):
-        try:
-            return self[key]
-        except KeyError:
-            return default
+    def __iter__(self):
+        for k, v in self._items():
+            yield k
 
-    def __contains__(self, key):
-        try:
-            self[key]
-            return True
-        except KeyError:
-            return False
+    def __repr__(self):
+        return '{0}({1!r})'.format(self.__class__.__name__, dict(self))

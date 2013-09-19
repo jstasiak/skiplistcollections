@@ -22,7 +22,7 @@ See http://pythonsweetness.tumblr.com/post/45227295342/fast-pypy-compatible-orde
 .. code-block:: python
 
    >>> from skiplistcollections import SkipListDict
-   >>> things = SkipListDict(maxsize=16)
+   >>> things = SkipListDict(capacity=16)
    >>> len(things)
    0
    >>> things['x'] = 1
@@ -43,7 +43,7 @@ See http://pythonsweetness.tumblr.com/post/45227295342/fast-pypy-compatible-orde
    2
 
 
-As you can see, ``skipcollections.SkipListDict`` follows Python dict interface quite closely. You should note that:
+As you can see, ``skipcollections.SkipListDict`` follows Python dict interface quite closely. In fact it inherits ``MutableMapping`` Abstract Base Class. You should note that:
 
 * You need to set the maximum dict size when you create it
 * ``update`` method and initializing using another mapping are not supported yet
@@ -51,6 +51,11 @@ As you can see, ``skipcollections.SkipListDict`` follows Python dict interface q
 
 Changes
 -------
+
+0.0.3
+`````
+
+* ``items()``, ``values()``, ``keys()`` return views now
 
 0.0.2
 `````

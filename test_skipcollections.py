@@ -7,7 +7,7 @@ from skiplistcollections import SkipListDict
 
 
 def test_regular_stuff():
-    stuff = SkipListDict(maxsize=1024)
+    stuff = SkipListDict(capacity=1024)
 
     used_keys = set((0,))
 
