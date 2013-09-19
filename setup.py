@@ -25,6 +25,7 @@ if __name__ == '__main__':
         author_email='jakub@stasiak.at',
         py_modules=['skiplistcollections'],
         license='MIT',
+        zip_safe=False,
         install_requires=('six',),
         classifiers=[
             'Development Status :: 3 - Alpha',
