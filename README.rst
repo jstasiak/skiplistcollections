@@ -64,6 +64,28 @@ There are differences of course:
 * You can't use None as a key
 * ``items``, ``keys``, and ``values`` are views and accept ``start_key`` and ``reverse`` parameters
 
+
+Changes
+--------
+
+0.0.4
+`````
+
+* Included start_key and reverse values in views reprs
+* Improved README
+
+
+0.0.3
+`````
+
+* ``items()``, ``values()``, ``keys()`` return views now
+
+0.0.2
+`````
+
+* Improved README
+-
+
 Copyright
 ---------
 
