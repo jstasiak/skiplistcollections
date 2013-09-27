@@ -53,6 +53,8 @@ See http://pythonsweetness.tumblr.com/post/45227295342/fast-pypy-compatible-orde
    >>> things.update({'a': 'A', 'b': 'B'})
    >>> len(things)
    4
+   >>> things
+   SkipListDict({'a': 'A', 'b': 'B', 'g': 2, 'x': 1}, capacity=16)
 
 
 As you can see, ``SkipListDict`` follows Python dict interface quite closely. In fact it inherits ``MutableMapping`` Abstract Base Class.
@@ -64,9 +66,43 @@ There are differences of course:
 * You can't use None as a key
 * ``items``, ``keys``, and ``values`` are views and accept ``start_key`` and ``reverse`` parameters
 
+SkipListSet
+-----------
+
+``SkipListSet`` is set implementation  using skip list. It's permanently sorted by key.
+
+* Iterating the container is *O(n)*
+* Adding, removing and checking if a key exist in the containe is *O(log n)* on average, *O(n)* in worst case (degenerated skip list)
+
+.. code-block:: python
+
+   >>> from skiplistcollections import SkipListSet
+   >>> things = SkipListSet(capacity=16)
+   >>> len(things)
+   0
+   >>> things.add(3)
+   >>> len(things)
+   1
+   >>> things.add(1)
+   >>> things.add(4)
+   >>> things
+   SkipListSet((1, 3, 4), capacity=16)
+   >>> tuple(things)
+   (1, 3, 4)
+   >>> things.remove(2)
+   Traceback (most recent call last):
+   KeyError: 2
+
+
 
 Changes
 --------
+
+0.0.5
+`````
+
+* Fixed SkipListDict repr
+* Created SkipListSet
 
 0.0.4
 `````
@@ -84,7 +120,7 @@ Changes
 `````
 
 * Improved README
--
+
 
 Copyright
 ---------

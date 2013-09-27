@@ -8,7 +8,7 @@ except ImportError:
 
 from six.moves import xrange
 
-__version__ = '0.0.4'
+__version__ = '0.0.5'
 __all__ = ('SkipListDict',)
 
 
@@ -79,6 +79,11 @@ class SkipListDict(colabc.MutableMapping):
         self._p = 1 / math.e
         self._size = 0
         self._random = random
+        self._capacity = capacity
+
+    @property
+    def capacity(self):
+        return self._capacity
 
     def _make_node(self, level, key, value):
         node = [None] * (4 + level)
@@ -208,4 +213,31 @@ class SkipListDict(colabc.MutableMapping):
             yield k
 
     def __repr__(self):
-        return '{0}({1!r})'.format(self.__class__.__name__, dict(self))
+        return '{0.__class__.__name__}({1}, capacity={0._capacity})'.format(
+            self,
+            '{' + ', '.join('{0!r}: {1!r}'.format(k, v) for (k, v) in self.items()) + '}')
+
+
+class SkipListSet(colabc.MutableSet):
+    def __init__(self, capacity):
+        self._storage = SkipListDict(capacity=capacity)
+
+    def __contains__(self, key):
+        return key in self._storage
+
+    def __iter__(self):
+        return iter(self._storage)
+
+    def __len__(self):
+        return len(self._storage)
+        pass
+
+    def add(self, key):
+        self._storage[key] = None
+
+    def discard(self, key):
+        del self._storage[key]
+
+    def __repr__(self):
+        return '{0.__class__.__name__}({1!r}, capacity={0._storage.capacity})'.format(
+            self, tuple(self))
