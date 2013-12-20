@@ -219,8 +219,8 @@ class SkipListDict(colabc.MutableMapping):
 
 
 class SkipListSet(colabc.MutableSet):
-    def __init__(self, capacity):
-        self._storage = SkipListDict(capacity=capacity)
+    def __init__(self, **kwargs):
+        self._storage = SkipListDict(**kwargs)
 
     def __contains__(self, key):
         return key in self._storage

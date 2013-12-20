@@ -55,6 +55,15 @@ def test_general_skiplistdict_behaviour():
         eq_(len(stuff), len(used_keys))
 
 
+def test_skiplistdict_boolean_value():
+    d = SkipListDict()
+    eq_(bool(d), False)
+    d[1] = 2
+    eq_(bool(d), True)
+    del d[1]
+    eq_(bool(d), False)
+
+
 def test_general_skiplistset_behaviour():
     stuff = SkipListSet(capacity=1024)
 
@@ -98,3 +107,12 @@ def test_general_skiplistset_behaviour():
             pass
 
         eq_(len(stuff), len(used_keys))
+
+
+def test_skiplistset_boolean_value():
+    s = SkipListSet()
+    eq_(bool(s), False)
+    s.add(1)
+    eq_(bool(s), True)
+    s.remove(1)
+    eq_(bool(s), False)
