@@ -64,6 +64,20 @@ def test_skiplistdict_boolean_value():
     eq_(bool(d), False)
 
 
+def test_level_drops_down_when_deleting_stuff():
+    d = SkipListDict()
+
+    counter = 0
+    while d.level < 4:
+        d[counter] = counter
+        counter += 1
+
+    for key in list(d.keys()):
+        del d[key]
+
+    eq_(d.level, 0)
+
+
 def test_general_skiplistset_behaviour():
     stuff = SkipListSet(capacity=1024)
 

@@ -85,6 +85,10 @@ class SkipListDict(colabc.MutableMapping):
     def capacity(self):
         return self._capacity
 
+    @property
+    def level(self):
+        return self._level
+
     def _make_node(self, level, key, value):
         node = [None] * (4 + level)
         node[0] = key
