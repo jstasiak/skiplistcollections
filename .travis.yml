@@ -6,8 +6,9 @@ python:
     - "3.3"
     - "pypy"
 install:
-    - pip install nose
+    - pip install coverage nose
     - python setup.py install
 script:
     - nosetests -v
-    - nosetests -v --with-doctest --doctest-extension=rst
+      --with-doctest --doctest-extension=py --doctest-extension=rst
+      --with-coverage --cover-package=skiplistcollections
