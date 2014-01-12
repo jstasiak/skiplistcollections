@@ -196,16 +196,7 @@ class SkipListDict(colabc.MutableMapping):
             raise KeyError('Key %r not found' % (key,))
 
     def __getitem__(self, key):
-        node = self._head
-
-        for i in xrange(self._level, -1, -1):
-            current_key = node[3 + i][0]
-
-            while current_key is not None and current_key < key:
-                node = node[3 + i]
-                current_key = node[3 + i][0]
-
-        node = node[3]
+        node = self._find_less(self._update[:], key)[3]
 
         if node[0] == key:
             return node[1]
