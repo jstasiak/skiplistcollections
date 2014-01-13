@@ -98,6 +98,10 @@ SkipListSet
 Changes
 --------
 
+0.0.6
+`````
+* Fixed bug with SkipListDict yielding too many items if start_key was not found (#1)
+
 0.0.5
 `````
 
