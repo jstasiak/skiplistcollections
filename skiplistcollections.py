@@ -20,7 +20,9 @@ class MappingView(colabc.MappingView):
 
     def __len__(self):
         if self._start_key is not None:
-            raise AttributeError()
+            # hacky workaround, if start_key is specified we have no way of knowing
+            # the result size at the moment
+            return len(tuple(iter(self)))
 
         return len(self._mapping)
 
@@ -117,11 +119,12 @@ class SkipListDict(colabc.MutableMapping):
             update = self._update[:]
             node = self._find_less(update, start_key)
 
-            if node[NODE_KEY] < start_key:
-                node = node[NODE_NEXT_NODE]
+            if node[NODE_KEY] is not None:
+                if node[NODE_KEY] < start_key:
+                    node = node[NODE_NEXT_NODE]
 
-            if reverse and node[NODE_KEY] > start_key:
-                node = node[NODE_PREVIOUS_NODE]
+                if reverse and node[NODE_KEY] > start_key:
+                    node = node[NODE_PREVIOUS_NODE]
 
         idx = NODE_PREVIOUS_NODE if reverse else NODE_NEXT_NODE
 
