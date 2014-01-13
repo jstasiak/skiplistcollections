@@ -18,10 +18,10 @@ class MappingView(colabc.MappingView):
         self._start_key = start_key
         self._reverse = reverse
 
-        if start_key is None:
-            self.__len__ = self._len
+    def __len__(self):
+        if self._start_key is not None:
+            raise AttributeError()
 
-    def _len(self):
         return len(self._mapping)
 
     def __repr__(self):
@@ -67,6 +67,12 @@ class ValuesView(MappingView, colabc.ValuesView):
             yield v
 
 
+NODE_KEY = 0
+NODE_VALUE = 1
+NODE_PREVIOUS_NODE = 2
+NODE_NEXT_NODE = 3
+
+
 class SkipListDict(colabc.MutableMapping):
     def __init__(self, capacity=65535, random=random.random):
         self._max_level = int(math.log(capacity, 2))
@@ -91,8 +97,8 @@ class SkipListDict(colabc.MutableMapping):
 
     def _make_node(self, level, key, value):
         node = [None] * (4 + level)
-        node[0] = key
-        node[1] = value
+        node[NODE_KEY] = key
+        node[NODE_VALUE] = value
         return node
 
     def _random_level(self):
@@ -106,15 +112,21 @@ class SkipListDict(colabc.MutableMapping):
         if reverse:
             node = self._tail
         else:
-            node = self._head[3]
+            node = self._head[NODE_NEXT_NODE]
         if start_key is not None:
             update = self._update[:]
-            found = self._find_less(update, start_key)
-            if found[3] is not self._nil:
-                node = found[3]
-        idx = 2 if reverse else 3
-        while node[0] is not None:
-            yield node[0], node[1]
+            node = self._find_less(update, start_key)
+
+            if node[NODE_KEY] < start_key:
+                node = node[NODE_NEXT_NODE]
+
+            if reverse and node[NODE_KEY] > start_key:
+                node = node[NODE_PREVIOUS_NODE]
+
+        idx = NODE_PREVIOUS_NODE if reverse else NODE_NEXT_NODE
+
+        while node[NODE_KEY] is not None:
+            yield node[NODE_KEY], node[NODE_VALUE]
             node = node[idx]
 
     def items(self, start_key=None, reverse=False):
@@ -135,10 +147,10 @@ class SkipListDict(colabc.MutableMapping):
     def _find_less(self, update, key):
         node = self._head
         for i in xrange(self._level, -1, -1):
-            current_key = node[3 + i][0]
+            current_key = node[NODE_NEXT_NODE + i][0]
             while current_key is not None and current_key < key:
-                node = node[3 + i]
-                current_key = node[3 + i][0]
+                node = node[NODE_NEXT_NODE + i]
+                current_key = node[NODE_NEXT_NODE + i][NODE_KEY]
             update[i] = node
         return node
 
@@ -150,56 +162,56 @@ class SkipListDict(colabc.MutableMapping):
         update = self._update[:]
         node = self._find_less(update, key)
         prev = node
-        node = node[3]
+        node = node[NODE_NEXT_NODE]
 
-        if node[0] == key:
-            node[1] = value
+        if node[NODE_KEY] == key:
+            node[NODE_VALUE] = value
         else:
             lvl = self._random_level()
             self._level = max(self._level, lvl)
             node = self._make_node(lvl, key, value)
-            node[2] = prev
+            node[NODE_PREVIOUS_NODE] = prev
 
             for i in xrange(0, lvl + 1):
-                node[3 + i] = update[i][3 + i]
-                update[i][3 + i] = node
+                node[NODE_NEXT_NODE + i] = update[i][NODE_NEXT_NODE + i]
+                update[i][NODE_NEXT_NODE + i] = node
 
-            if node[3] is self._nil:
+            if node[NODE_NEXT_NODE] is self._nil:
                 self._tail = node
             else:
-                node[3][2] = node
+                node[NODE_NEXT_NODE][NODE_PREVIOUS_NODE] = node
 
             self._size += 1
 
     def __delitem__(self, key):
         update = self._update[:]
         node = self._find_less(update, key)
-        node = node[3]
+        node = node[NODE_NEXT_NODE]
 
-        if node[0] == key:
-            node[3][2] = update[0]
+        if node[NODE_KEY] == key:
+            node[NODE_NEXT_NODE][NODE_PREVIOUS_NODE] = update[0]
 
             for i in xrange(self._level + 1):
-                if update[i][3 + i] is not node:
+                if update[i][NODE_NEXT_NODE + i] is not node:
                     break
 
-                update[i][3 + i] = node[3 + i]
+                update[i][NODE_NEXT_NODE + i] = node[NODE_NEXT_NODE + i]
 
-            while self._level > 0 and self._head[3 + self._level][0] is None:
+            while self._level > 0 and self._head[NODE_NEXT_NODE + self._level][NODE_KEY] is None:
                 self._level -= 1
 
             if self._tail is node:
-                self._tail = node[2]
+                self._tail = node[NODE_PREVIOUS_NODE]
 
             self._size -= 1
         else:
             raise KeyError('Key %r not found' % (key,))
 
     def __getitem__(self, key):
-        node = self._find_less(self._update[:], key)[3]
+        node = self._find_less(self._update[:], key)[NODE_NEXT_NODE]
 
-        if node[0] == key:
-            return node[1]
+        if node[NODE_KEY] == key:
+            return node[NODE_VALUE]
         else:
             raise KeyError
 

@@ -130,3 +130,26 @@ def test_skiplistset_boolean_value():
     eq_(bool(s), True)
     s.remove(1)
     eq_(bool(s), False)
+
+
+def test_skiplistdict_items_view_has_no_len_when_start_key_specified():
+    sld = SkipListDict()
+    items = sld.items(start_key='irrelevant')
+    try:
+        len(items)
+        raise AssertionError('Should have raised an exception')
+    except AttributeError:
+        pass
+
+
+def test_skiplistdict_iteration_regression():
+    # The regression would result in yielding more items than necessary
+    # if the search key was not found in the dictionary
+    sld = SkipListDict()
+    sld.update(dict(b='b', d='d'))
+
+    eq_(tuple(sld.keys(start_key='c')), ('d',))
+    eq_(tuple(sld.keys(start_key='c', reverse=True)), ('b',))
+
+    eq_(tuple(sld.keys(start_key='e')), ())
+    eq_(tuple(sld.keys(start_key='a', reverse=True)), ())
